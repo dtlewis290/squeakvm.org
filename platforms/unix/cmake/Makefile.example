@@ -1,4 +1,4 @@
-# Thu Jan 29 20:12:32 EST 2015 dtl
+# Sun Oct  2 18:26:35 EDT 2016 dtl
 #
 # Makefile to build and install a 32-bit and 64-bit object memory VM. This
 # makefile can be run with /usr/sbin/checkinstall to create an RPM or Debian
@@ -31,6 +31,12 @@ build64/CMakeCache.txt:
 install:	squeakvm
 	(cd build; make install)
 	(cd build64; make install)
+
+# Make Debian package with checkinstall
+deb:	squeakvm
+	checkinstall -D --nodoc --pkgname 'squeakvm' \
+		--pkgversion `grep ' VM_VERSION ' build/config.h | sed 's/.*VERSION //' | sed 's/\"//g'` \
+		make install
 
 clean:
 	rm -rf build build64
