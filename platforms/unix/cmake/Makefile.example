@@ -9,7 +9,7 @@
 # Assume platforms is ../platforms and src is ../src
 
 # CFLAGS setting to pass to cmake configure. If undefined, use compiler defaults.
-CFLAGS_PARAM="--CFLAGS='-O3 -D_FILE_OFFSET_BITS=64'"
+CFLAGS_PARAM="--CFLAGS='-O2 -D_FILE_OFFSET_BITS=64'"
 #CFLAGS_PARAM="--CFLAGS='-O0 -g'"
 
 squeakvm:	build/squeakvm build64/squeakvm64
