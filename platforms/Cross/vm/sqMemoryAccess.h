@@ -68,6 +68,53 @@
   typedef unsigned long long	usqInt;
 #endif
 
+#ifndef SIZEOF_LONG
+#  if LLP64
+#    define SIZEOF_LONG 4
+#  else
+#    define SIZEOF_LONG SIZEOF_VOID_P /* default is sizeof(long)==sizeof(void *) */
+#  endif
+#endif
+
+/* sqLong is a signed integer with at least 64bits on both 32 and 64 bits images
+   usqLong is the unsigned flavour
+   SQLABS is a macro for taking absolute value of a sqLong */
+#if !defined(sqLong)
+#  if SIZEOF_LONG == 8
+#     define sqLong long
+#     define usqLong unsigned long
+#     define SQLABS labs
+#  elif _MSC_VER
+#     define sqLong __int64
+#     define usqLong unsigned __int64
+#     define SQLABS llabs
+#  else
+#     define sqLong long long
+#     define usqLong unsigned long long
+#     define SQLABS llabs
+#  endif
+#endif /* !defined(sqLong) */
+
+/* sqIntptr_t is a signed integer with enough bits to hold a pointer
+   usqIntptr_t is the unsigned flavour
+   this is essentially C99 intptr_t and uintptr_t but we support legacy compilers
+   the C99 printf formats macros are also defined with SQ prefix */
+#if SIZEOF_LONG == SIZEOF_VOID_P
+typedef long sqIntptr_t;
+typedef unsigned long usqIntptr_t;
+#define PRIdSQPTR "ld"
+#define PRIuSQPTR "lu"
+#define PRIxSQPTR "lx"
+#define PRIXSQPTR "lX"
+#else
+typedef long long sqIntptr_t;
+typedef unsigned long long usqIntptr_t;
+#define PRIdSQPTR "lld"
+#define PRIuSQPTR "llu"
+#define PRIxSQPTR "llx"
+#define PRIXSQPTR "llX"
+#endif
+
 #if defined(SQ_HOST64) && defined(SQ_IMAGE32)
   extern char *sqMemoryBase;
 # define SQ_FAKE_MEMORY_OFFSET	16 // (1*1024*1024)	/* nonzero to debug addr xlation */
@@ -86,6 +133,8 @@
   static inline sqInt intAtPointerput(char *ptr, int val)	{ return (sqInt)(*((unsigned int *)ptr)= (int)val); }
   static inline sqInt longAtPointer(char *ptr)			{ return (sqInt)(*((sqInt *)ptr)); }
   static inline sqInt longAtPointerput(char *ptr, sqInt val)	{ return (sqInt)(*((sqInt *)ptr)= (sqInt)val); }
+  static inline sqLong long64AtPointer(char *ptr)		{ return *(sqLong *)ptr; }
+  static inline sqLong long64AtPointerput(char *ptr, sqLong val)	{ return *(sqLong *)ptr= val; }
   static inline sqInt oopAtPointer(char *ptr)			{ return (sqInt)(*((sqInt *)ptr)); }
   static inline sqInt oopAtPointerput(char *ptr, sqInt val)	{ return (sqInt)(*((sqInt *)ptr)= (sqInt)val); }
   static inline char *pointerForOop(usqInt oop)			{ return sqMemoryBase + oop; }
@@ -98,6 +147,8 @@
   static inline sqInt intAtput(sqInt oop, int val)		{ return intAtPointerput(pointerForOop(oop), val); }
   static inline sqInt longAt(sqInt oop)				{ return longAtPointer(pointerForOop(oop)); }
   static inline sqInt longAtput(sqInt oop, sqInt val)		{ return longAtPointerput(pointerForOop(oop), val); }
+  static inline sqLong long64At(sqInt oop)			{ return long64AtPointer(pointerForOop(oop)); }
+  static inline sqLong long64Atput(sqInt oop, sqLong val)	{ return long64AtPointerput(pointerForOop(oop), val); }
   static inline sqInt oopAt(sqInt oop)				{ return oopAtPointer(pointerForOop(oop)); }
   static inline sqInt oopAtput(sqInt oop, sqInt val)		{ return oopAtPointerput(pointerForOop(oop), val); }
 #else
@@ -110,6 +161,8 @@
 # define intAtPointerput(ptr, val)	((sqInt)(*((unsigned int *)(ptr))= (int)(val)))
 # define longAtPointer(ptr)		((sqInt)(*((sqInt *)(ptr))))
 # define longAtPointerput(ptr, val)	((sqInt)(*((sqInt *)(ptr))= (sqInt)(val)))
+# define long64AtPointer(ptr)		(*(sqLong *)(ptr))
+# define long64AtPointerput(ptr,val)	(*(sqLong *)(ptr)= (sqLong)(val))
 # define oopAtPointer(ptr)		(sqInt)(*((sqInt *)ptr))
 # define oopAtPointerput(ptr, val)	(sqInt)(*((sqInt *)ptr)= (sqInt)val)
 # define pointerForOop(oop)		((char *)(sqMemoryBase + ((usqInt)(oop))))
@@ -120,6 +173,8 @@
 # define shortAtput(oop, val)		shortAtPointerput(pointerForOop(oop), (val))
 # define longAt(oop)			longAtPointer(pointerForOop(oop))
 # define longAtput(oop, val)		longAtPointerput(pointerForOop(oop), (val))
+# define long64At(oop)			long64AtPointer(pointerForOop(oop))
+# define long64Atput(oop,val)		long64AtPointerput(pointerForOop(oop), val)
 # define intAt(oop)			intAtPointer(pointerForOop(oop))
 # define intAtput(oop, val)		intAtPointerput(pointerForOop(oop), (val))
 # define oopAt(oop)			oopAtPointer(pointerForOop(oop))
