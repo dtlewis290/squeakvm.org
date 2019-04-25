@@ -12,6 +12,10 @@
 CFLAGS_PARAM="--CFLAGS='-O2 -D_FILE_OFFSET_BITS=64'"
 #CFLAGS_PARAM="--CFLAGS='-O0 -g'"
 
+O=/usr/local
+P=../../platforms
+S=../../src
+
 squeakvm:	build/squeakvm build64/squeakvm64
 
 build/squeakvm:	build/CMakeCache.txt
@@ -19,14 +23,14 @@ build/squeakvm:	build/CMakeCache.txt
 
 build/CMakeCache.txt:
 	mkdir build || true
-	(cd build; ../../platforms/unix/cmake/configure --src=../../src ${CFLAGS_PARAM})
+	(cd build; ${P}/unix/cmake/configure --prefix=${O} --src=${S} ${CFLAGS_PARAM})
 
 build64/squeakvm64:	build64/CMakeCache.txt
 	(cd build64; make)
 
 build64/CMakeCache.txt:
 	mkdir build64 || true
-	(cd build64; ../../platforms/unix/cmake/configure --src=../../src --image64 --vm-only ${CFLAGS_PARAM})
+	(cd build64; ${P}/unix/cmake/configure --prefix=${O} --src=${S} --image64 --vm-only ${CFLAGS_PARAM})
 
 install:	squeakvm
 	(cd build; make install)
