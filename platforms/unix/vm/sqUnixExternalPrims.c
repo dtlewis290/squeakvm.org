@@ -145,7 +145,10 @@ static void *tryLoadModule(char *in, char *name)
   if (!handle) {
     struct stat buf;
     if ((0 == stat(path, &buf)) && ! S_ISDIR(buf.st_mode))
-      fprintf(stderr, "%s\n", dlerror());
+    {
+      fprintf(stderr, "failed loading module %s due to %s\n", path, dlerror());
+      fflush(stderr);
+    }
   }
   return handle;
 }
@@ -159,8 +162,10 @@ void *ioLoadModule(char *pluginName)
 
   if ((0 == pluginName) || ('\0' == pluginName[0])) {	/* find module in main program */
     handle= dlopen(0, RTLD_NOW | RTLD_GLOBAL);
-    if (handle == 0) {
+    if (handle == 0)
+    {
       fprintf(stderr, "ioLoadModule(<intrinsic>): %s\n", dlerror());
+      fflush(stderr);
     }
     else {
       fdebugf((stderr, "loaded: <intrinsic>\n"));
@@ -232,7 +237,8 @@ static void *tryLoading(char *dirName, char *moduleName)
 		if (handle == 0)
 		  {
 		    /*if ((!err) && !(sqIgnorePluginErrors))*/
-		      fprintf(stderr, "ioLoadModule(%s):\n  %s\n", libName, dlerror());
+		    fprintf(stderr, "ioLoadModule(%s):\n  %s\n", libName, dlerror());
+		    fflush(stderr);
 		  }
 		else
 		  {
@@ -285,7 +291,10 @@ void *ioLoadModule(char *pluginName)
     {
       handle= dlopen(0, RTLD_NOW | RTLD_GLOBAL);
       if (handle == 0)
-	fprintf(stderr, "ioLoadModule(<intrinsic>): %s\n", dlerror());
+        {
+	  fprintf(stderr, "ioLoadModule(<intrinsic>): %s\n", dlerror());
+	  fflush(stderr);
+        }
       else
 	{
 	  fdebugf((stderr, "loaded: <intrinsic>\n"));
