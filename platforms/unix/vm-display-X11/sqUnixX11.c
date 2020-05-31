@@ -4677,14 +4677,29 @@ static sqInt display_ioHasDisplayDepth(sqInt i)
   return false;
 }
 
-
-static sqInt display_ioSetDisplayMode(sqInt width, sqInt height, sqInt depth, sqInt fullscreenFlag)
+static sqInt display_ioSetDisplayMode(sqInt width, sqInt height, sqInt depth, sqInt fsFlag)
 {
-  fprintf(stderr, "ioSetDisplayMode(%d, %d, %d, %d)\n",
-	  width, height, depth, fullscreenFlag);
+  setSavedWindowSize((width << 16) + (height & 0xFFFF));
+  if (fsFlag)
+    {
+      if (getFullScreenFlag())
+        return 0; // already in full screen mode
+      else
+        savedWindowOrigin= -1;
+    }
+  else
+    {
+      savedWindowOrigin= (width << 16) + (height & 0xFFFF);
+      setSavedWindowSize(savedWindowOrigin);
+      setWindowSize();
+      noteResize(stWidth, stHeight);
+      XResizeWindow(stDisplay, stParent, xWidth, xHeight);
+      XResizeWindow(stDisplay, stWindow, xWidth, xHeight);
+    }
+  setFullScreenFlag(fullScreen);
+  display_ioSetFullScreen(fsFlag);
   return 0;
 }
-
 
 void copyReverseImageBytes(int *fromImageData, int *toImageData, int depth, int width, int height,
 			   int affectedL, int affectedT, int affectedR, int affectedB)
