@@ -72,7 +72,7 @@
 #endif
 
 static sqInt sound_Stop(void);
-static int sound_AvailableSpace(void);
+static sqInt sound_AvailableSpace(void);
 
 static int auFd=	       -1;   /* open on /dev/audio */
 static int auCtlFd=	       -1;   /* open on /dev/audioctl */
