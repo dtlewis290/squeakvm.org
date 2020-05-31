@@ -1447,6 +1447,7 @@ int main(int argc, char **argv, char **envp)
   dpy->winInit();
   imgInit();
   dpy->winOpen();
+  ioSetFullScreen(getFullScreenFlag());
 
 #if defined(HAVE_DLOPEN)
   if (useJit)
