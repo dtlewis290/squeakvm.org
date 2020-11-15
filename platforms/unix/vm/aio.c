@@ -82,7 +82,7 @@
 #   define FASYNC O_ASYNC
 # endif
 
-#else /* !HAVE_CONFIG_H -- assume lowest common demoninator */
+#else /* !HAVE_CONFIG_H -- assume lowest common denominator */
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -94,6 +94,10 @@
 # include <sys/select.h>
 # include <sys/ioctl.h>
 # include <fcntl.h>
+
+#ifdef __sun
+#include <sys/file.h>  /* include FASYNC so that code defined(FASYNC) works */
+#endif
 
 #endif
 
@@ -162,6 +166,9 @@ static char *handlerName(aioHandler h)
 
 void aioInit(void)
 {
+  /* use sigaction to avoid frequent abort of the VM on 'Pollable Event' */
+  struct sigaction sigio_action;
+
   extern void forceInterruptCheck(int);	/* not really, but hey */
 
   FD_ZERO(&fdMask);
@@ -171,7 +178,14 @@ void aioInit(void)
   FD_ZERO(&xdMask);
   maxFd= 0;
   signal(SIGPIPE, SIG_IGN);
-  signal(SIGIO,   forceInterruptCheck);
+
+  sigio_action.sa_sigaction = forceInterruptCheck;
+  sigio_action.sa_flags = SA_RESTART | SA_SIGINFO;
+  sigemptyset(&sigio_action.sa_mask);
+  if (sigaction(SIGIO, &sigio_action, 0)) {
+    perror("aioInit sigaction SIGIO");
+    exit(1);
+  }
 }
 
 
