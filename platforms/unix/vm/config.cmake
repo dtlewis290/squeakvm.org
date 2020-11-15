@@ -202,7 +202,7 @@ CONFIG_DEFINE (LIBRARY_SUFFIX)
 
 # sqUnixMain.c
 
-SET (VM_BUILD_STRING "\"Unix built on \"__DATE__ \" \"__TIME__\" Compiler: \"__VERSION__")
+SET (VM_BUILD_STRING "\"Unix built on \"__DATE__ \" \"__TIME__\" Compiler: ${CMAKE_C_COMPILER_VERSION}\"")
 
 CONFIG_DEFINE (VM_BUILD_STRING)
 
