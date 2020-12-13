@@ -13,10 +13,12 @@
 /* Sometimes it's necessary to define __LITTLE_ENDIAN explicitly
    but these catch some common cases. */
 
+#ifndef __LITTLE_ENDIAN
 #if defined(i386) || defined(i486) || \
 	defined(intel) || defined(x86) || defined(i86pc) || \
 	defined(__alpha) || defined(__osf__)
 #define __LITTLE_ENDIAN
+#endif
 #endif
 
 #ifdef __LITTLE_ENDIAN
