@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 #include "sq.h"
+#include "sqVirtualMachine.h"	/* primitiveFail in struct VirtualMachine */
 #include "sqFFI.h"
 
 #ifndef NO_FFI_SUPPORT

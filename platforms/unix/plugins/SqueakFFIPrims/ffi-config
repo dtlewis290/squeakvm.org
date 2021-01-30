@@ -7,7 +7,7 @@
 #    -lib	print nothing if supported, otherwise  `-lffi'
 #    -query	exit with status 0 if supported, 1 if libffi required
 
-cfgdir=../../config
+cfgdir=../../cmake
 
 if [ $# -gt 0 ]; then
     case $1 in
@@ -39,6 +39,7 @@ esac
 
 case ${abi} in
     linux)		abi=sysv;;
+    solaris*)		abi=sysv;;
     darwin*)		abi=darwin;;
     *)			abi=libffi; lib="-lffi";;
 esac
