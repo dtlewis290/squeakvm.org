@@ -213,11 +213,13 @@ sqLong ioMicroSeconds(void)
  */
 sqInt sqUnixUtcWithOffset(sqLong *microSeconds, int *offset)
 {
+  sqLong theMicroSeconds;
   struct timeval timeval;
   if (gettimeofday(&timeval, NULL) == -1) return -1;
   time_t seconds= timeval.tv_sec;
   suseconds_t usec= timeval.tv_usec;
-  *microSeconds= seconds * 1000000 + usec;
+  theMicroSeconds = seconds;
+  *microSeconds= theMicroSeconds * 1000000 + usec;
 #if defined(HAVE_TM_GMTOFF)
   *offset= localtime(&seconds)->tm_gmtoff;
 #else
