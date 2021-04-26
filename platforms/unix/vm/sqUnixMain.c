@@ -223,14 +223,11 @@ sqInt sqUnixUtcWithOffset(sqLong *microSeconds, int *offset)
 #if defined(HAVE_TM_GMTOFF)
   *offset= localtime(&seconds)->tm_gmtoff;
 #else
-  {
-    struct tm *local= localtime(&seconds);
-    struct tm *gmt= gmtime(&seconds);
-    int d= local->tm_yday - gmt->tm_yday;
-    int h= ((d < -1 ? 24 : 1 < d ? -24 : d * 24) + local->tm_hour - gmt->tm_hour);
-    int m= h * 60 + local->tm_min - gmt->tm_min;
-    *offset= m * 60;
-  }
+#ifdef HAVE_TIMEZONE
+  *offset = ((daylight) * 60 * 60) - timezone;
+#else
+#error: cannot determine timezone correction
+#endif
 #endif
   return 0;
 }
