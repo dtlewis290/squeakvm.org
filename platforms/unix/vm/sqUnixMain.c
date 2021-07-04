@@ -152,7 +152,7 @@ static void initTimers(void)
 #      else
 	sa.sa_flags= 0;	/* assume we already have BSD behaviour */
 #      endif
-#      if defined(__linux__) && !defined(__ia64) && !defined(__alpha__)
+#      if defined(__linux__) && !defined(__ia64) && !defined(__alpha__) && !defined(__hppa__)
 	sa.sa_restorer= 0;
 #      endif
 	sigaction(SIGALRM, &sa, 0);

@@ -258,7 +258,7 @@ static void kb_initGraphics(_self)
       sa.sa_handler= sigusr1;
       sigemptyset(&sa.sa_mask);
       sa.sa_flags= 0;
-#    if !defined(__ia64) && !defined(__alpha__)
+#    if !defined(__ia64) && !defined(__alpha__) && !defined(__hppa__)
       sa.sa_restorer= 0;
 #    endif
       sigaction(SIGUSR1, &sa, 0);
