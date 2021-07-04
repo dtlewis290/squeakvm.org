@@ -1,6 +1,8 @@
 #ifndef MPEG3PROTOS_H
 #define MPEG3PROTOS_H
 
+#include "changesForSqueak.h"
+
 /* CSS */
 
 mpeg3_css_t* mpeg3_new_css();

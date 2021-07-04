@@ -48,6 +48,8 @@
 #include <windows.h>
 #endif
 
+#include <stdlib.h>
+
 mpeg3_demuxer_t* mpeg3_new_demuxer(mpeg3_t *file, int do_audio, int do_video, int stream_id);
 mpeg3_title_t* mpeg3_new_title(mpeg3_t *file, char *path);
 mpeg3demux_timecode_t* mpeg3_append_timecode(mpeg3_demuxer_t *demuxer, 

@@ -33,7 +33,7 @@
 #include "mpeg3video.h"
 #include "mpeg3videoprotos.h"
 #include "slice.h"
-
+#include "changesForSqueak.h"
 #include <stdlib.h>
 
 #ifdef HAVE_MMX
