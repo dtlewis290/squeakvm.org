@@ -19,6 +19,7 @@
 #include "jinclude.h"
 #include "jpeglib.h"
 #include "jerror.h"
+#include "config.h"  /* Squeak */
 
 /* Expanded data destination object for stdio output */
 typedef struct {
@@ -113,7 +114,8 @@ METHODDEF(void) term_destination (j_compress_ptr cinfo) {
       ERREXIT(cinfo, JERR_FILE_WRITE);
   }
 }
-#if 0
+
+#if !defined(USE_LIBRARY_SHARED)
 /*
  * Prepare for output to a stdio stream.
  * The caller must have already opened the stream, and is responsible
