@@ -15,6 +15,7 @@ Options include:
   --without-<plugin>    do not build the named plugin
   --without-gl          disable everything that depends on OpenGL
   --without-SUGAR       disable support for SUGAR environment
+  --link-shared-lib     dynamic link to platform -ljpeg and -lpcre
   --image64             build a VM for running 64-bit images
   --vm-only             build executables only, no scripts or man pages
   --enableFastBlt       use optimised BitBlt (not supported on most platforms)

@@ -19,6 +19,7 @@
 #include "jinclude.h"
 #include "jpeglib.h"
 #include "jerror.h"
+#include "config.h"  /* Squeak */
 
 /* Expanded data source object for stdio input */
 typedef struct {
@@ -149,7 +150,8 @@ METHODDEF(void) skip_input_data (j_decompress_ptr cinfo, long num_bytes) {
 METHODDEF(void) term_source (j_decompress_ptr cinfo) {
   /* no work necessary here */
 }
-#if 0
+
+#if !defined(USE_LIBRARY_SHARED)
 /*
  * Prepare for input from a stdio stream.
  * The caller must have already opened the stream, and is responsible
@@ -188,6 +190,7 @@ GLOBAL(void) jpeg_mem_src (j_decompress_ptr cinfo, char * pSourceData, unsigned 
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
 #endif
+
 /* This function allows data to be moved if necessary */
 GLOBAL(int) jpeg_mem_src_newLocationOfData (j_decompress_ptr cinfo, char * pSourceData, unsigned sourceDataSize) {
   my_src_ptr src;
