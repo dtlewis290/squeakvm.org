@@ -113,7 +113,7 @@ METHODDEF(void) term_destination (j_compress_ptr cinfo) {
       ERREXIT(cinfo, JERR_FILE_WRITE);
   }
 }
-
+#if 0
 /*
  * Prepare for output to a stdio stream.
  * The caller must have already opened the stream, and is responsible
@@ -143,3 +143,5 @@ GLOBAL(void) jpeg_mem_dest (j_compress_ptr cinfo, char * pDestination, unsigned 
   dest->pSpaceUsed = pDestinationSize;
   *(dest->pSpaceUsed) = 0;
 }
+#endif
+
