@@ -121,9 +121,16 @@ MACRO (USE_LIBRARY lib)
   LIST (APPEND squeak_libs "${lib}")
 ENDMACRO (USE_LIBRARY)
 
+MACRO (USE_LIBRARY_SHARED lib)
+  LIST (APPEND squeak_libs_shared "${lib}")
+ENDMACRO (USE_LIBRARY_SHARED)
+
 MACRO (USE_FRAMEWORK fwk)
   USE_LIBRARY ("-framework ${fwk}")
 ENDMACRO (USE_FRAMEWORK)
+
+USE_LIBRARY_SHARED ("-lpcre")
+USE_LIBRARY_SHARED ("-ljpeg")
 
 MACRO (CONFIG_DEFINE var)
   LIST (APPEND config_vars "${var}")
