@@ -38,7 +38,7 @@ fi
 if test -d ${unix}/../../.git
 then
     # This is a git repository
-    commits=`git log | grep '^commit ' | wc -l`
+    commits=`git log --oneline | wc -l`
     svnversion=`echo ${commits} + ${offsetAtSyncPoint} | bc`
     echo "${svnversion}" > "${unix}/svnversion"
 elif test -d "${unix}/../.svn" -o -d "${unix}/../../.svn"; then
