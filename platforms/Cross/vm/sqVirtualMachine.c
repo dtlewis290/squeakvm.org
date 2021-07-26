@@ -129,6 +129,7 @@ sqInt classString(void);
 
 /* InterpreterProxy methodsFor: 'instance creation' */
 sqInt clone(sqInt oop);
+sqInt cloneObject(sqInt oop); // oscog compatibility synonym July 2021
 sqInt instantiateClassindexableSize(sqInt classPointer, sqInt size);
 sqInt makePointwithxValueyValue(sqInt xValue, sqInt yValue);
 sqInt popRemappableOop(void);
@@ -341,6 +342,7 @@ struct VirtualMachine* sqGetInterpreterProxy(void)
 
 	/* InterpreterProxy methodsFor: 'instance creation' */
 	VM->clone = clone;
+	VM->cloneObject = clone;
 	VM->instantiateClassindexableSize = instantiateClassindexableSize;
 	VM->makePointwithxValueyValue = makePointwithxValueyValue;
 	VM->popRemappableOop = popRemappableOop;
