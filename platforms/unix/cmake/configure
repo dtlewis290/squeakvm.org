@@ -11,6 +11,7 @@ Options include:
   --help                print this message and then exit
   --src=<directory>     look for generated interpreter sources in <directory>
   --prefix=<directory>  install into <prefix>/{bin,lib,man}
+  --scriptname=<script> install squeak run script as <prefix>/bin/<script>
   --CFLAGS=<flags>      override default compiler flags
   --without-<plugin>    do not build the named plugin
   --without-gl          disable everything that depends on OpenGL

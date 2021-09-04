@@ -69,7 +69,11 @@ ADD_CUSTOM_TARGET (squeak
   COMMAND chmod +x ${bld}/squeak
 )
 
-INSTALL (PROGRAMS ${bld}/squeak DESTINATION bin)
+IF (OPT--scriptname)
+  INSTALL (PROGRAMS ${bld}/squeak DESTINATION bin RENAME ${OPT--scriptname} )
+ELSE (OPT--scriptname)
+  INSTALL (PROGRAMS ${bld}/squeak DESTINATION bin)
+ENDIF (OPT--scriptname)
 
 ADD_CUSTOM_TARGET (squeak.sh
   DEPENDS ${config}/squeak.sh.in
