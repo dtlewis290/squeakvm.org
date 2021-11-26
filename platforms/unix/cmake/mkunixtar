@@ -1,0 +1,40 @@
+#!/bin/sh
+# Thu Nov 25 20:51:04 EST 2021
+#
+# Make a unix tarball to support Debian package creation.
+# Run this script in a clean directory.
+
+if test ! -d platforms
+then
+  svn co http://squeakvm.org/svn/squeak/trunk/platforms
+fi
+
+if test ! -d src
+then
+  svn co http://squeakvm.org/svn/squeak/trunk/src
+fi
+
+# see platforms/unix/cmake/configure for vmmversion and svnversion logic
+interp_h=src/vm/interp.h # generated code containing VMM version information
+change_log=platforms/unix/ChangeLog # a file under SVN version control
+
+vmmversion="`tr '\015 ' '\012\012' < \"${interp_h}\" | sed '1,/VMMaker/d;q'`"
+svnversion=`svn info "${change_log}" | fgrep Revision: | awk '{print $2}'`
+dirname=Squeak-${vmmversion}-${svnversion}
+tarname=${dirname}-src.tar.gz
+
+# copy platforms and src, removing obsolete unix src dir
+# and excluding .svn meta information
+find src/* platforms/Cross platforms/unix \
+  -wholename "platforms/unix/src" -prune -o -print \
+  | cpio -pmd ${dirname}
+
+# prepare a build directory for the final tarball
+mkdir ${dirname}/build
+cp platforms/unix/cmake/Makefile.example ${dirname}/build/Makefile
+
+tar czvf $tarname ${dirname}
+
+rm -rf ${dirname}
+echo created unix squeakvm tarball $tarname
+
