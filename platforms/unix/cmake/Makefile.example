@@ -12,6 +12,12 @@
 CFLAGS_PARAM="--CFLAGS='-O2 -D_FILE_OFFSET_BITS=64'"
 #CFLAGS_PARAM="--CFLAGS='-O0 -g'"
 
+# Extra parameters for the cmake/configure step. Example below
+# will install in /usr/bin rather than /usr/local/bin, use shared
+# libraries, and install the run script as /usr/bin/squeakvm
+# (uncomment for Debian squeak-vm package distribution support)
+#CONFIG_PARAMS= --prefix=/usr --link-shared-lib --scriptname=squeakvm
+
 O=/usr/local
 P=../../platforms
 S=../../src
@@ -23,14 +29,14 @@ build/squeakvm:	build/CMakeCache.txt
 
 build/CMakeCache.txt:
 	mkdir build || true
-	(cd build; ${P}/unix/cmake/configure --prefix=${O} --src=${S} ${CFLAGS_PARAM})
+	(cd build; ${P}/unix/cmake/configure --prefix=${O} --src=${S} ${CONFIG_PARAMS} ${CFLAGS_PARAM})
 
 build64/squeakvm64:	build64/CMakeCache.txt
 	(cd build64; make)
 
 build64/CMakeCache.txt:
 	mkdir build64 || true
-	(cd build64; ${P}/unix/cmake/configure --prefix=${O} --src=${S} --image64 --vm-only ${CFLAGS_PARAM})
+	(cd build64; ${P}/unix/cmake/configure --prefix=${O} --src=${S} --image64 --vm-only ${CONFIG_PARAMS} ${CFLAGS_PARAM})
 
 install:	squeakvm
 	(cd build; make install)
