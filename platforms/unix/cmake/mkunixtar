@@ -14,12 +14,19 @@ then
   svn co http://squeakvm.org/svn/squeak/trunk/src
 fi
 
-# see platforms/unix/cmake/configure for vmmversion and svnversion logic
+unix=platforms/unix
+change_log=${unix}/ChangeLog # a file under SVN version control
 interp_h=src/vm/interp.h # generated code containing VMM version information
-change_log=platforms/unix/ChangeLog # a file under SVN version control
 
+# vmmversion and svnversion logic copied from platforms/unix/cmake/configure
 vmmversion="`tr '\015 ' '\012\012' < \"${interp_h}\" | sed '1,/VMMaker/d;q'`"
-svnversion=`svn info "${change_log}" | fgrep Revision: | awk '{print $2}'`
+if test -d "${unix}/../.svn" -o -d "${unix}/../../.svn"; then
+    svnversion=`svn info "${unix}/ChangeLog" | fgrep Revision: | awk '{print $2}'`
+    echo "${svnversion}" > "${unix}/svnversion"
+else
+    svnversion=`cat "${unix}/svnversion"`
+fi
+
 dirname=Squeak-${vmmversion}-${svnversion}
 tarname=${dirname}-src.tar.gz
 
