@@ -62,25 +62,14 @@ sqInt   sqFileStdioHandlesInto(SQFile files[3]);
 sqInt dir_Create(char *pathString, sqInt pathStringLength);
 sqInt dir_Delete(char *pathString, sqInt pathStringLength);
 sqInt dir_Delimitor(void);
-#if PharoVM
-sqInt dir_Lookup(char *pathString, sqInt pathStringLength, sqInt index,
-		/* outputs: */
-		char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
-		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile, sqInt *posixPermissions, sqInt *isSymlink);
-sqInt dir_EntryLookup(char *pathString, sqInt pathStringLength, char* nameString, sqInt nameStringLength,
-		/* outputs: */
-		char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
-		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile, sqInt *posixPermissions, sqInt *isSymlink);
-#else
 sqInt dir_Lookup(char *pathString, sqInt pathStringLength, sqInt index,
 		/* outputs: */
 		char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
 		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile);
-sqInt dir_EntryLookup(char *pathString, sqInt pathStringLength, char* nameString, sqInt nameStringLength,
+sqInt dir_EntryLookup(char *pathString, sqInt pathStringLength, char *nameString, sqInt nameStringLength,
 		/* outputs: */
 		char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
-		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile);
-#endif
+		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile, sqInt *posixPermissions, sqInt *isSymlink);
 sqInt dir_PathToWorkingDir(char *pathName, sqInt pathNameMax);
 sqInt dir_SetMacFileTypeAndCreator(char *filename, sqInt filenameSize, char *fType, char *fCreator);
 sqInt dir_GetMacFileTypeAndCreator(char *filename, sqInt filenameSize, char *fType, char *fCreator);
