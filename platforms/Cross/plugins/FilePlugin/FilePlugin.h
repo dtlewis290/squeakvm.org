@@ -65,7 +65,7 @@ sqInt dir_Delimitor(void);
 sqInt dir_Lookup(char *pathString, sqInt pathStringLength, sqInt index,
 		/* outputs: */
 		char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
-		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile);
+		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile, sqInt *posixPermissions, sqInt *isSymlink);
 sqInt dir_EntryLookup(char *pathString, sqInt pathStringLength, char *nameString, sqInt nameStringLength,
 		/* outputs: */
 		char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
