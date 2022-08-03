@@ -89,6 +89,16 @@ DIR *openDir= 0;
 
 extern time_t convertToSqueakTime(time_t unixTime);
 
+void 
+sqCloseDir()
+{
+  /* Ensure that the cached open directory is closed */
+  if (lastPathValid)
+    closedir(openDir);
+  lastPathValid= false;
+  lastIndex= -1;
+  lastPath[0]= '\0';
+}
 
 sqInt dir_Create(char *pathString, sqInt pathStringLength)
 {
@@ -151,10 +161,9 @@ static int maybeOpenDir(char *unixPath)
   return true;
 }
 
-
 sqInt dir_Lookup(char *pathString, sqInt pathStringLength, sqInt index,
 /* outputs: */  char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
-		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile)
+		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile, sqInt * posixPermissions, sqInt *isSymlink)
 {
   /* Lookup the index-th entry of the directory with the given path, starting
      at the root of the file system. Set the name, name length, creation date,
@@ -177,21 +186,29 @@ sqInt dir_Lookup(char *pathString, sqInt pathStringLength, sqInt index,
   *modificationDate = 0;
   *isDirectory      = false;
   *sizeIfFile       = 0;
+  *posixPermissions = 0;
+  *isSymlink        = false;
 
-  if ((pathStringLength == 0))
+  if (pathStringLength == 0)
     strcpy(unixPath, ".");
   else if (!sq2uxPath(pathString, pathStringLength, unixPath, MAXPATHLEN, 1))
     return BAD_PATH;
 
-  /* get file or directory info */
-  if (!maybeOpenDir(unixPath))
-    return BAD_PATH;
-
-  if (++lastIndex == index)
-    index= 1;		/* fake that the dir is rewound and we want the first entry */
+  /* (Re)open the directory if required */
+  if (lastPathValid && 
+      ++lastIndex == index &&
+      !strcmp(lastPath, unixPath))
+    /* We can re-use the cached open directory.
+     * We want the next entry, so reset index */
+    index= 1;
   else
-    {
-      rewinddir(openDir);	/* really rewind it, and read to the index */
+    { /* The directory must be opened or reopened.
+       * We can't just rewind the directory as entries appear to be cached on
+       * CIFS mounted file systems, and files may have been deleted between 
+       * calls. */
+      sqCloseDir();
+      if (!maybeOpenDir(unixPath))
+        return BAD_PATH;
       lastIndex= index;
     }
 
@@ -219,17 +236,21 @@ sqInt dir_Lookup(char *pathString, sqInt pathStringLength, sqInt index,
   *nameLength= ux2sqPath(dirEntry->d_name, nameLen, name, MAXPATHLEN, 0);
 
   {
-    char terminatedName[MAXPATHLEN];
+    char terminatedName[MAXPATHLEN+1];
+    if(nameLen > MAXPATHLEN)
+      return BAD_PATH;
     strncpy(terminatedName, dirEntry->d_name, nameLen);
     terminatedName[nameLen]= '\0';
+    if(strlen(unixPath) + 1 + nameLen > MAXPATHLEN)
+      return BAD_PATH;
     strcat(unixPath, "/");
     strcat(unixPath, terminatedName);
     if (stat(unixPath, &statBuf) && lstat(unixPath, &statBuf))
-      {
+    {
 	/* We can't stat the entry, but failing here would invalidate
 	   the whole directory --bertf */
-	return ENTRY_FOUND;
-      }
+      return ENTRY_FOUND;
+    }
   }
 
   /* last change time */
@@ -242,9 +263,73 @@ sqInt dir_Lookup(char *pathString, sqInt pathStringLength, sqInt index,
   else
     *sizeIfFile= statBuf.st_size;
 
+  *isSymlink = S_ISLNK(statBuf.st_mode);
+  *posixPermissions = statBuf.st_mode & 0777;
+
   return ENTRY_FOUND;
 }
 
+sqInt dir_EntryLookup(char *pathString, sqInt pathStringLength, char* nameString, sqInt nameStringLength,
+/* outputs: */  char *name, sqInt *nameLength, sqInt *creationDate, sqInt *modificationDate,
+		sqInt *isDirectory, squeakFileOffsetType *sizeIfFile, sqInt *posixPermissions, sqInt *isSymlink)
+{
+  /* Lookup the given name in the given directory,
+     Set the name, name length, creation date,
+     creation time, directory flag, and file size (if the entry is a file).
+     Return:	0 	if a entry is found at the given index
+     		1	if there is no such entry in the directory
+		2	if the given path has bad syntax or does not reach a directory
+  */
+  
+  char unixPath[MAXPATHLEN+1];
+  struct stat statBuf;
+
+  /* default return values */
+  *name             = 0;
+  *nameLength       = 0;
+  *creationDate     = 0;
+  *modificationDate = 0;
+  *isDirectory      = false;
+  *sizeIfFile       = 0;
+  *posixPermissions = 0;
+  *isSymlink        = false;
+
+  if (pathStringLength == 0)
+    strcpy(unixPath, ".");
+  else if (!sq2uxPath(pathString, pathStringLength, unixPath, MAXPATHLEN, 1))
+    return BAD_PATH;
+
+  char terminatedName[MAXPATHLEN+1];
+  if(nameStringLength > MAXPATHLEN)
+    return BAD_PATH;
+  strncpy(terminatedName, nameString, nameStringLength);
+  terminatedName[nameStringLength]= '\0';
+  if(strlen(unixPath) + 1 + nameStringLength > MAXPATHLEN)
+    return BAD_PATH;
+  strcat(unixPath, "/");
+  strcat(unixPath, terminatedName);
+  if (stat(unixPath, &statBuf) && lstat(unixPath, &statBuf)) {
+	return NO_MORE_ENTRIES;
+  }
+
+  /* To match the results of dir_Lookup, copy back the file name */
+  *nameLength = ux2sqPath(nameString, nameStringLength, name, 256, 0);
+
+  /* last change time */
+  *creationDate= convertToSqueakTime(statBuf.st_ctime);
+  /* modification time */
+  *modificationDate= convertToSqueakTime(statBuf.st_mtime);
+
+  if (S_ISDIR(statBuf.st_mode))
+    *isDirectory= true;
+  else
+    *sizeIfFile= statBuf.st_size;
+  
+  *isSymlink = S_ISLNK(statBuf.st_mode);
+  *posixPermissions = statBuf.st_mode & 0777;
+
+  return ENTRY_FOUND;
+}
 
 /* unix files are untyped, and the creator is correct by default */
 
