@@ -360,6 +360,8 @@ int inModalLoop= 0, dpyPitch= 0, dpyPixels= 0;
 /* longest we're prepared to wait for the selection owner to convert it (seconds) */
 #define SELECTION_TIMEOUT	3
 
+static char *defaultWindowLabel= shortImageName;
+
 /* Value of last key pressed indexed by KeyCode in the range 8 - 255 */
 static int lastKeyValue[]=
   {
@@ -3451,7 +3453,7 @@ void initWindow(char *displayName)
     if (browserWindow == 0)
       {
 	XSetClassHint(stDisplay, stParent, classHints);
-	XStoreName(stDisplay, stParent, shortImageName);
+	if (!noTitle) XStoreName(stDisplay, stParent, defaultWindowLabel);
       }
     XFree((void *)classHints);
   }
@@ -6291,6 +6293,7 @@ static void display_printUsage(void)
   printf("  -mapdelbs             map Delete key onto Backspace\n");
   printf("  -nointl               disable international keyboard support\n");
   printf("  -notitle              disable the Squeak window title bar\n");
+  printf("  -title <t>            use t as the Squeak window title instead of the image name\n");
   printf("  -noxdnd               disable X drag-and-drop protocol support\n");
   printf("  -optmod <n>           map Mod<n> to the Option key\n");
 #if defined(SUGAR)
@@ -6337,6 +6340,7 @@ static void display_parseEnvironment(void)
   if (getenv("SQUEAK_NOINTL"))		x2sqKey= x2sqKeyPlain;
 #endif
   if (getenv("SQUEAK_NOTITLE"))		noTitle= 1;
+  if ((ev= getenv("SQUEAK_TITLE")))	defaultWindowLabel= ev;
   if (getenv("SQUEAK_NOXDND"))		useXdnd= 0;
   if (getenv("SQUEAK_FULLSCREEN"))	fullScreen= 1;
   if (getenv("SQUEAK_FULLSCREEN_DIRECT"))	fullScreenDirect= 1;
@@ -6435,6 +6439,7 @@ static int display_parseArgument(int argc, char **argv)
 	  sscanf(argv[1], "%d", &verboseLevel);
 	}
 #    endif
+      else if (!strcmp(arg, "-title")) defaultWindowLabel= argv[1];
       else
 	n= 0;	/* not recognised */
     }
