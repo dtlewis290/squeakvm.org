@@ -1,5 +1,5 @@
 # squeakvm.org
-This is a git mirror of the upstream squeakvm Subversion repository at http://squeakvm.org/svn/squeak/trunk. The repository is hosted at squeakvm.org and provided by Ian Piumarta, who is the original author of the unix VM and much of the code in this repository.
+This is a git mirror of the upstream squeakvm Subversion repository at http://squeakvm.org/svn/squeak/trunk. The repository is hosted at squeakvm.org and provided by Ian Piumarta, who is the original author of the unix VM and much of the code in this repository. This repository provides the support code for the classic VM suitable for Squeak versions through 4.6, see https://squeak.org for up to date information.
 
 Commits are expected to originate from the upstream respository and are copied to git via git-svn.
 
