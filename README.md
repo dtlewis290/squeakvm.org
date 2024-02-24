@@ -5,4 +5,4 @@ Commits are expected to originate from the upstream respository and are copied t
 
 Note that the version naming of compiled unix VMs is derived from the SNV version file, which currently requires use of Subversion in the local repository.
 
-The squeakvm branch attempts to maiantain a linear history matching that of the upstream SVN repository. Merges and pull requests should happen in master.
+The squeakvm branch attempts to maintain a linear history matching that of the upstream SVN repository. Merges and pull requests should be done in master.
