@@ -97,7 +97,14 @@ fi
 vmmversion="`tr '\015 ' '\012\012' < \"${interp_h}\" | sed '1,/VMMaker/d;q'`"
 
 if test -d "${unix}/../.svn" -o -d "${unix}/../../.svn"; then
+    # trunk repository at squeakvm.org
     svnversion=`svn info "${unix}/ChangeLog" | fgrep Revision: | awk '{print $2}'`
+    echo "${svnversion}" > "${unix}/svnversion"
+elif test -d "${unix}/../../.git" -o -d "${unix}/../../.svn"; then
+    # git mirror of trunk, or possibly other git branches
+    # 12 digit time stamp is readable and clearly distinguished from SVN trunk
+    commit=`git log -n1 --format="%at"`
+    svnversion=`date --date=@${commit} +%Y%m%d%H%M`
     echo "${svnversion}" > "${unix}/svnversion"
 else
     svnversion=`cat "${unix}/svnversion"`
