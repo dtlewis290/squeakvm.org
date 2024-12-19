@@ -11,22 +11,22 @@
 # If the sources are converted from the Subversion master repository
 # to a git repository, the Subversion revision number is no longer
 # available. This script attempts to synthesize a version number based
-# that matches revision 3772 at that commit level, and that increments
+# that matches revision 3833 at that commit level, and that increments
 # the version number by one for each additional commit to the git master
 # branch.
 #
 # Assumptions:
-#   - The git repository is on the master branch.
-#   - The git repository is up to date with Subversion revision 3772.
-#   - Subversion revision 3772 corresponds to git commit count 2294.
-#   - No attempt will be made to synchronized Subversion and git beyond 3772.
+#   - The git repository is on the squeakvm branch.
+#   - The git repository is up to date with Subversion revision 3833.
+#   - Subversion revision 3833 corresponds to git commit count 2362.
+#   - No attempt will be made to synchronized Subversion and git beyond 3833.
 #   - If subsequent commits are made to Subversion and git, the version
 #     numbers will be inconsistent, and this script will need to be
 #     updated accordingly.
 #
 
-baselineSubversionRevisionNumber=3772
-baselineGitCommitCount=2294
+baselineSubversionRevisionNumber=3833
+baselineGitCommitCount=2362
 offsetAtSyncPoint=`echo ${baselineSubversionRevisionNumber} - ${baselineGitCommitCount} | bc`
 
 if ! test ${unix}

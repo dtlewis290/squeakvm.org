@@ -20,12 +20,7 @@ interp_h=src/vm/interp.h # generated code containing VMM version information
 
 # vmmversion and svnversion logic copied from platforms/unix/cmake/configure
 vmmversion="`tr '\015 ' '\012\012' < \"${interp_h}\" | sed '1,/VMMaker/d;q'`"
-if test -d "${unix}/../.svn" -o -d "${unix}/../../.svn"; then
-    svnversion=`svn info "${unix}/ChangeLog" | fgrep Revision: | awk '{print $2}'`
-    echo "${svnversion}" > "${unix}/svnversion"
-else
-    svnversion=`cat "${unix}/svnversion"`
-fi
+svnversion=`${unix}/cmake/findPlatformSourceVersion`
 
 dirname=Squeak-${vmmversion}-${svnversion}
 tarname=${dirname}-src.tar.gz
