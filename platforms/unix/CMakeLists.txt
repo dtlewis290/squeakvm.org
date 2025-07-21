@@ -170,8 +170,6 @@ INCLUDE (${unix}/vm/build.cmake)
 
 BUILD_PLUGINS ()
 
-ADD_SUBDIRECTORY (${unix}/npsqueak)
-
 SET (cmake ${unix}/../../cmake)
 
 IF (EXISTS ${cmake}/Packages.cmake)
