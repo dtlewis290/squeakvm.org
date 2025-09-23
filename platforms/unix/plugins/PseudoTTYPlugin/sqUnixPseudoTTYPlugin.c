@@ -216,7 +216,7 @@ int ptyForkAndExec(AsyncFile *f, int semaIndex,
     argv[0]= cmd;
     for (i= 1;  i <= argLen;  ++i)
       {
-	int argOop= argIndex[i - 1];
+	sqInt argOop= argIndex[i - 1];
 	char *arg= 0;
 	int   len= 0;
 	if (!vm->isBytes(argOop)) goto fail;
