@@ -132,7 +132,7 @@ int ptyInit(void)
   prevchld= signal(SIGCHLD, sigchld);
   if ((prevchld != SIG_DFL) && (prevchld != SIG_IGN))
     {
-      fprintf(stderr, "declining responsibility for child processes!\n");
+      debugf(("ptyInit: declining responsibility for child processes!\n"));
       signal(SIGCHLD, prevchld);
       reaping= 0;
     }
@@ -174,7 +174,7 @@ int ptyShutdown(void)
 #include <time.h>
 
 
-int ptyForkAndExec(AsyncFile *f, int semaIndex,
+pid_t ptyForkAndExec(AsyncFile *f, int semaIndex,
 		   char *cmdIndex, int cmdLen, sqInt *argIndex, int argLen)
 {
   int ptm= -1, pts= -1;
@@ -187,7 +187,7 @@ int ptyForkAndExec(AsyncFile *f, int semaIndex,
   if (sqUnixAsyncFileSessionID == 0)
     {
       vm->primitiveFail();
-      return 0;
+      return -1;
     }
 
   debugf(("AsyncFileSession is %d\n", sqUnixAsyncFileSessionID));
@@ -209,6 +209,7 @@ int ptyForkAndExec(AsyncFile *f, int semaIndex,
     char   **argv= (char **)alloca(sizeof(char *) * (argLen + 2));
     int      i= 0;
     SlavePtr slave= 0;
+    pid_t    childPid;
 
     memcpy((void *)cmd, cmdIndex, cmdLen);
     cmd[cmdLen]= '\0';
@@ -236,9 +237,9 @@ int ptyForkAndExec(AsyncFile *f, int semaIndex,
     slaves= slave;
     slave->pts= pts;
     slave->pty= fp;
-    slave->pid= fork();
-
-    switch (slave->pid)
+    childPid= fork();
+    slave->pid= childPid;
+    switch (childPid)
       {
       case -1:			/* error */
 	slaves= slaves->next;
@@ -260,7 +261,7 @@ int ptyForkAndExec(AsyncFile *f, int semaIndex,
 	close(pts);
 	break;
       }
-    return 0;
+    return childPid;
   }
 
  fail:
@@ -271,7 +272,7 @@ int ptyForkAndExec(AsyncFile *f, int semaIndex,
   if (ptm >= 0) close(ptm);
   if (pts >= 0) close(pts);
   vm->primitiveFail();
-  return 0;
+  return -1;
 }
 
 
