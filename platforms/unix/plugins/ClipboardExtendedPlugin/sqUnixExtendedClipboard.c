@@ -117,10 +117,12 @@ int sqPasteboardCopyItemFlavorDataformatformatLength (sqInt inPasteboard, char* 
 {
   int bytes= 0;
   sqInt outData;
+  sqInt byteArrayIndex;
 
   bytes= clipboardSizeWithType(format, formatLength);
-  outData = interpreterProxy->instantiateClassindexableSize(interpreterProxy->classByteArray(), bytes);
-  clipboardReadIntoAt(bytes, (sqInt) firstIndexableField(outData), 0);
+  outData= interpreterProxy->instantiateClassindexableSize(interpreterProxy->classByteArray(), bytes);
+  byteArrayIndex= oopForPointer(firstIndexableField(outData));
+  clipboardReadIntoAt(bytes, byteArrayIndex, 0);
   return outData;
 }
 
