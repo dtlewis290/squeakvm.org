@@ -135,12 +135,14 @@ sqInt
 sqFileAtEnd(SQFile *f) {
 	/* Return true if the file's read/write head is at the end of the file. */
 
+	squeakFileOffsetType position;
+
 	if (!sqFileValid(f))
 		return interpreterProxy->success(false);
 	pentry(sqFileAtEnd);
-	if (f->isStdioStream)
-		return pexit(feof(getFile(f)));
-	return ftell(getFile(f)) >= getSize(f);
+	if ((position = ftell(getFile(f))) < 0)
+		return feof(getFile(f)); // non-positionable stream, e.g. a pipe
+	return (position >= getSize(f));
 }
 
 sqInt
