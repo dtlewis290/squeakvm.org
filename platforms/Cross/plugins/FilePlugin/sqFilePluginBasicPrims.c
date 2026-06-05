@@ -135,18 +135,12 @@ sqInt
 sqFileAtEnd(SQFile *f) {
 	/* Return true if the file's read/write head is at the end of the file. */
 
-	int pos;
 	if (!sqFileValid(f))
 		return interpreterProxy->success(false);
 	pentry(sqFileAtEnd);
-	if (pos = ftell(getFile(f)) < 0) {
-		// A unix pipe is not positionable and fails ftell, so
-		// answer feof as the next best approximation.
-		return feof(getFile(f));
-	} else {
-		// Squeak defines atEnd as the end position in a positionable stream.
-		return pos >= getSize(f);
-	}
+	if (f->isStdioStream)
+		return pexit(feof(getFile(f)));
+	return ftell(getFile(f)) >= getSize(f);
 }
 
 sqInt
