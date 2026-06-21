@@ -17,6 +17,8 @@ CFLAGS_PARAM="--CFLAGS='-O2 -D_FILE_OFFSET_BITS=64'"
 # libraries, and install the run script as /usr/bin/squeakvm
 # (uncomment for Debian squeak-vm package distribution support)
 #CONFIG_PARAMS= --prefix=/usr --link-shared-lib --scriptname=squeakvm
+# For cmake 4.x uncomment the following
+#CONFIG_PARAMS= -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 O=/usr/local
 P=../../platforms
