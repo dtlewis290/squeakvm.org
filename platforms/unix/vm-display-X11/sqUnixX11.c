@@ -1286,7 +1286,7 @@ static Atom stringToAtom(char *target, size_t size)
  * isDnd : true if XdndSelection, false if CLIPBOARD or PRIMARY
  * isClaiming : true if XGetSelectionOwner is needed
  */
-static void display_clipboardWriteWithType(char *data, size_t ndata, char *typeName, size_t nTypeName, int isDnd, int isClaiming)
+static sqInt display_clipboardWriteWithType(char *data, size_t ndata, char *typeName, size_t nTypeName, int isDnd, int isClaiming)
 {
   if (allocateSelectionBuffer(ndata))
     {
@@ -1297,6 +1297,7 @@ static void display_clipboardWriteWithType(char *data, size_t ndata, char *typeN
       stSelectionType= type;
       if (isClaiming) claimSelection();
     }
+    return 0;
 }
 
 
@@ -1310,8 +1311,10 @@ static sqInt display_clipboardSize(void)
 
 static sqInt display_clipboardWriteFromAt(sqInt count, sqInt byteArrayIndex, sqInt startIndex)
 {
-  display_clipboardWriteWithType(pointerForOop(byteArrayIndex + startIndex), count, NULL, 0, 0, 1);
-  return 0;
+  if (!isConnectedToXServer)
+    return 0;
+
+  return display_clipboardWriteWithType(pointerForOop(byteArrayIndex + startIndex), count, NULL, 0, 0, 1);
 }
 
 /* Transfer the X selection into the given byte array; optimise local requests. */
@@ -2478,6 +2481,9 @@ static char **display_clipboardGetTypeNames(void)
   Status   success= 0;
   int      nTypeNames= 0;
 
+  if (!isConnectedToXServer)
+    return 0;
+
   if (dndAvailable())
     dndGetTargets(&targets, &nTypeNames);
   else 
@@ -2505,7 +2511,10 @@ static sqInt display_clipboardSizeWithType(char *typeName, int nTypeName)
   int    	  isDnd= 0;
   Atom   	  inputSelection;
   SelectionChunk *chunk;
-  
+ 
+  if (!isConnectedToXServer)
+    return 0;
+ 
   isDnd= dndAvailable();
   inputSelection= isDnd ? xaXdndSelection : xaClipboard;
 
